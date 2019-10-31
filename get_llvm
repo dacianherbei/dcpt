@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Based on https://gist.github.com/lefticus/d2069c0284d12a5882d85c78a890f5b8
+
+VERSION=tags/RELEASE_900/final/
+
+svn co http://llvm.org/svn/llvm-project/llvm/$VERSION llvm
+
+pushd llvm/tools
+svn co http://llvm.org/svn/llvm-project/lld/$VERSION lld
+popd
+
+pushd llvm/tools
+svn co http://llvm.org/svn/llvm-project/cfe/$VERSION clang
+popd
+
+pushd llvm/tools/clang/tools
+svn co http://llvm.org/svn/llvm-project/clang-tools-extra/$VERSION extra
+popd
+
+pushd llvm/projects
+svn co http://llvm.org/svn/llvm-project/compiler-rt/$VERSION compiler-rt
+popd
+
+pushd llvm/projects
+svn co http://llvm.org/svn/llvm-project/libcxx/$VERSION libcxx
+popd
+
+pushd llvm/projects
+svn co http://llvm.org/svn/llvm-project/libcxxabi/$VERSION libcxxabi
+popd
+
+mkdir -p llvm-build
+pushd llvm-build
+CXX=$COMPILER cmake ../llvm -DCMAKE_BUILD_TYPE:STRING=Release \
+  -DCOMPILER_RT_INCLUDE_TESTS:BOOL=OFF \
+  -DLLVM_ENABLE_ASSERTIONS:BOOL=OFF \
+  -DBUILD_SHARED_LIBS:BOOL=ON \
+  -DLLVM_OPTIMIZED_TABLEGEN:BOOL=ON-DPYTHON=ON \
+  -DPYTHON_EXECUTABLE=$(which python3)
+
+popd
