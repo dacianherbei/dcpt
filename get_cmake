@@ -1,0 +1,19 @@
+#!/bin/bash
+
+git clone https://github.com/Kitware/CMake.git
+
+cd CMake
+
+git checkout v3.15.4
+
+mkdir build && cd build
+
+cmake -DCMAKE_USE_OPENSSL=OFF ..
+
+make -j
+
+make install
+
+cd ..
+
+rm -rf ./CMake
